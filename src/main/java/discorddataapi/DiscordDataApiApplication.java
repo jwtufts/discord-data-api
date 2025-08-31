@@ -1,11 +1,11 @@
-package discordbotapi;
+package discorddataapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DiscordBotApiApplication {
+public class DiscordDataApiApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DiscordBotApiApplication.class, args);
+        SpringApplication.run(DiscordDataApiApplication.class, args);
     }
 }
