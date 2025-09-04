@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import discorddataapi.services.GuildRoleService;
+import discorddataapi.services.MemberCacheService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,13 +30,15 @@ public class UserController {
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final GuildRoleService guildRoleService;
     private final ObjectMapper objectMapper;
+    private final MemberCacheService memberCacheService;
     @Value("${discord.guild-id}")
     private String guildId;
 
-    public UserController(OAuth2AuthorizedClientService authorizedClientService, GuildRoleService guildRoleService, ObjectMapper objectMapper) {
+    public UserController(OAuth2AuthorizedClientService authorizedClientService, GuildRoleService guildRoleService, ObjectMapper objectMapper, MemberCacheService memberCacheService) {
         this.authorizedClientService = authorizedClientService;
         this.guildRoleService = guildRoleService;
         this.objectMapper = objectMapper;
+        this.memberCacheService = memberCacheService;
     }
 
     @GetMapping
@@ -51,6 +54,13 @@ public class UserController {
 
     @GetMapping("/member")
     public ResponseEntity<String> userInfo(@AuthenticationPrincipal OAuth2User principal, OAuth2AuthenticationToken authentication) {
+        String userId = principal.getAttribute("id");
+
+        String cached = memberCacheService.get(userId);
+        if (cached != null) {
+            return ResponseEntity.ok(cached);
+        }
+
         OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
                 authentication.getAuthorizedClientRegistrationId(),
                 authentication.getName()
