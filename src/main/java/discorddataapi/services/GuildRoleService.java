@@ -34,11 +34,6 @@ public class GuildRoleService {
         this.objectMapper = objectMapper;
     }
 
-    @PostConstruct
-    public void init() {
-        refreshRoles();
-    }
-
     @Scheduled(fixedRate = 3600000) // every hour
     public void refreshRoles() {
         try {
@@ -59,9 +54,9 @@ public class GuildRoleService {
 
             this.roleCache = newCache;
 
-            System.out.println("✅ Refreshed guild roles (" + newCache.size() + " roles)");
+            System.out.println("Refreshed guild roles (" + newCache.size() + " roles)");
         } catch (Exception e) {
-            System.err.println("❌ Failed to refresh roles: " + e.getMessage());
+            System.err.println("Failed to refresh roles: " + e.getMessage());
         }
     }
 

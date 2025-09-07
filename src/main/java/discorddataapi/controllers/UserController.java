@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/me")
+@RequestMapping("api/v1/me")
 public class UserController {
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final GuildRoleService guildRoleService;
@@ -68,14 +68,19 @@ public class UserController {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        return WebClient.create("https://discord.com/api/v10")
+        String memberJson = WebClient.create("https://discord.com/api/v10")
                 .get()
                 .uri("/users/@me/guilds/{guildId}/member", guildId)
                 .headers(headers -> headers.setBearerAuth(accessToken))
                 .retrieve()
                 .bodyToMono(String.class)
-                .map(ResponseEntity::ok)
                 .block();
+
+        if (memberJson != null) {
+            memberCacheService.put(userId, memberJson);
+        }
+
+        return ResponseEntity.ok(memberJson);
     }
 
     @GetMapping("/has-role")
