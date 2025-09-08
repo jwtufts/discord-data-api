@@ -2,8 +2,10 @@ package discorddataapi.controllers;
 
 import discorddataapi.models.Message;
 import discorddataapi.repositories.MessageRepository;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -24,4 +26,14 @@ public class MessageController {
     public Message getMessageById(@PathVariable String id) {
         return messageRepository.findById(id).orElse(null);
     }
+
+    @GetMapping("/search/byUserId")
+    public List<Message> getMessagesByUserAndDateRange(
+            @RequestParam String userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to
+    ) {
+        return messageRepository.findByAuthorUserIdAndCreatedAtBetween(userId, from, to);
+    }
+
 }

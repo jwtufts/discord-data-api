@@ -22,6 +22,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/auth/discord/login").permitAll()
                         .anyRequest().authenticated()
                 )
