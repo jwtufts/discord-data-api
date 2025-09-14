@@ -11,4 +11,5 @@ import java.util.List;
 public interface MessageRepository extends MongoRepository<Message, String> {
     Message findByMessageId(String messageId);
     List<Message> findByAuthorUserIdAndCreatedAtBetween(String userId, Instant from, Instant to);
+    List<Message> findByAuthorUserIdAndCreatedAtLessThanEqual(String userId, Instant to);
 }

@@ -30,10 +30,13 @@ public class MessageController {
     @GetMapping("/search/byUserId")
     public List<Message> getMessagesByUserAndDateRange(
             @RequestParam String userId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to
     ) {
+        if (from == null) {
+            return messageRepository.findByAuthorUserIdAndCreatedAtLessThanEqual(userId, to);
+        }
+
         return messageRepository.findByAuthorUserIdAndCreatedAtBetween(userId, from, to);
     }
-
 }
