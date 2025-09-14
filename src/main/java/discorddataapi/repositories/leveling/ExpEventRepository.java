@@ -19,5 +19,7 @@ public interface ExpEventRepository extends MongoRepository<ExpEvent, String> {
     );
 
     List<ExpEvent> findByUserIdAndReasonAndTimestampLessThanEqual(String userId, String reason, Instant to);
+    List<ExpEvent> findByUserIdAndTimestampLessThanEqual(String userId, Instant to);
+    List<ExpEvent> findByUserIdAndTimestampBetween(String userId, Instant from, Instant to);
 }
 

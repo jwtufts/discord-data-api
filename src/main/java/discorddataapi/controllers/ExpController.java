@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/v1/voice")
-public class VoiceController {
+@RequestMapping("/api/v1/exp")
+public class ExpController {
     private final ExpEventRepository expEventRepository;
 
-    public VoiceController(ExpEventRepository expEventRepository) {
+    public ExpController(ExpEventRepository expEventRepository) {
         this.expEventRepository = expEventRepository;
     }
 
@@ -37,15 +37,23 @@ public class VoiceController {
     }
 
     @GetMapping("/byUserId")
-    public List<ExpEvent> getVoiceExpEvents(
+    public List<ExpEvent> getExpEvents(
             @RequestParam String userId,
+            @RequestParam(required = false) String reason,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to
     ) {
         if (from == null) {
-            return expEventRepository.findByUserIdAndReasonAndTimestampLessThanEqual(userId, "voice", to);
+            if (reason != null) {
+                return expEventRepository.findByUserIdAndReasonAndTimestampLessThanEqual(userId, reason, to);
+            } else {
+                return expEventRepository.findByUserIdAndTimestampLessThanEqual(userId, to);
+            }
         }
 
-        return expEventRepository.findByUserIdAndReasonAndTimestampBetween(userId, "voice", from, to);
+        if (reason == null) {
+            return expEventRepository.findByUserIdAndTimestampBetween(userId, from, to);
+        }
+        return expEventRepository.findByUserIdAndReasonAndTimestampBetween(userId, reason, from, to);
     }
 }
